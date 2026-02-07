@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
-import joblib
-import os
+import joblib, os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from tensorflow.keras.models import load_model
