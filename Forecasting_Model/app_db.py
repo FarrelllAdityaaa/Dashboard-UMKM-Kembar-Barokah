@@ -1,4 +1,3 @@
-# Library Imports/Dependencies
 import pandas as pd
 import numpy as np
 import joblib, os
@@ -13,7 +12,8 @@ from datetime import datetime, timedelta
 
 # ============================================================
 # FLASK APPLICATION INITIALIZATION
-# Inisialisasi aplikasi Flask sebagai service forecasting
+# Aplikasi Flask berfungsi sebagai backend service
+# untuk forecasting penjualan berbasis LSTM
 # ============================================================
 
 app = Flask(__name__)
@@ -23,7 +23,7 @@ CORS(app)  # Mengizinkan akses API dari frontend berbeda domain
 # ============================================================
 # DATABASE CONFIGURATION & GLOBAL VARIABLES
 # Konfigurasi database dan variabel global yang digunakan
-# sepanjang runtime aplikasi
+# selama runtime aplikasi
 # ============================================================
 
 # Konfigurasi database MySQL (UMKM Kembar Barokah)
@@ -37,7 +37,8 @@ DB_NAME = "kembarbarokahdb"
 DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 g_db_engine = create_engine(DATABASE_URI)
 
-# Global cache untuk model dan scaler (dimuat sekali saat startup)
+# Cache global untuk model dan scaler
+# (dimuat sekali saat server startup)
 g_models = {}
 g_scalers = {}
 g_scalers_features_only = {}
@@ -46,36 +47,39 @@ g_holiday_set = None
 # Parameter window time-series (mingguan)
 g_window_size = 4  # Menggunakan 4 minggu data historis
 
-# Referensi harga produk untuk estimasi pendapatan
+# Harga produk (digunakan untuk estimasi pendapatan)
 g_product_prices = {
     "Kerupuk Kulit": 7500,
     "Stik Bawang": 6000,
     "Keripik Bawang": 5000
 }
 
-# Daftar produk yang didukung model forecasting
+# Daftar produk yang didukung sistem forecasting
 g_product_list = ["Kerupuk Kulit", "Stik Bawang", "Keripik Bawang"]
 
 
 # ============================================================
 # HELPER FUNCTIONS
-# Fungsi pendukung untuk feature engineering dan preprocessing
+# Fungsi-fungsi pendukung untuk preprocessing dan
+# feature engineering
 # ============================================================
 
 def load_holidays(holiday_csv_path):
     """
-    Memuat data hari libur nasional dari file CSV
-    dan mengubahnya menjadi set tanggal untuk lookup cepat.
+    Membaca data hari libur nasional dari file CSV
+    dan mengonversinya menjadi set tanggal
+    untuk pengecekan cepat (O(1)).
     """
     print(f"Memuat data hari libur dari: {holiday_csv_path}")
     try:
         df_holidays = pd.read_csv(holiday_csv_path)
         date_column_name = 'Tanggal'
 
-        # Menambahkan tahun secara eksplisit sesuai kebutuhan dataset
+        # Menambahkan tahun eksplisit (sesuai kebutuhan dataset)
         df_holidays['Tanggal_Penuh'] = df_holidays[date_column_name] + ' 2025'
         df_holidays['Tanggal_Datetime'] = pd.to_datetime(
-            df_holidays['Tanggal_Penuh'], format='%d %B %Y'
+            df_holidays['Tanggal_Penuh'],
+            format='%d %B %Y'
         )
 
         holiday_set = set(df_holidays['Tanggal_Datetime'].dt.normalize())
@@ -89,7 +93,7 @@ def load_holidays(holiday_csv_path):
 
 def inverse_transform_helper(scaled_values, scaler, n_features):
     """
-    Mengembalikan nilai hasil prediksi dari skala normalisasi
+    Mengembalikan nilai prediksi dari skala normalisasi
     ke nilai asli (jumlah produk terjual).
     """
     scaled_values = np.array(scaled_values).flatten()
@@ -127,18 +131,19 @@ def get_future_calendar_features(date_range, holiday_set):
 
 # ============================================================
 # DATA ACCESS & AGGREGATION
-# Mengambil data transaksi dari database dan mengubahnya
-# menjadi format mingguan untuk input model
+# Mengambil data transaksi dari database dan
+# mengonversinya menjadi data mingguan
 # ============================================================
 
 def get_historical_data_from_db(product_name, n_weeks):
     """
     Mengambil data transaksi harian dari database,
-    menerapkan cutoff date, lalu mengagregasi menjadi data mingguan.
+    menerapkan cutoff date, lalu mengagregasi
+    menjadi data mingguan sebagai input model.
     """
     print(f"Mengambil data historis harian untuk {product_name}...")
 
-    # Menentukan cutoff (hanya data sampai minggu lalu)
+    # Menentukan cutoff (data hanya sampai minggu lalu)
     today = datetime.now()
     monday_this_week = today - timedelta(days=today.weekday())
     monday_this_week = monday_this_week.replace(
@@ -167,16 +172,14 @@ def get_historical_data_from_db(product_name, n_weeks):
 
     if df.empty:
         print("WARNING: Data kosong setelah filter cutoff date")
-        return pd.DataFrame(
-            columns=[
-                'Jumlah_Produk_Terjual',
-                'Jumlah_Terjual_Minggu_Lalu',
-                'is_minggu_gajian',
-                'is_libur_nasional'
-            ]
-        )
+        return pd.DataFrame(columns=[
+            'Jumlah_Produk_Terjual',
+            'Jumlah_Terjual_Minggu_Lalu',
+            'is_minggu_gajian',
+            'is_libur_nasional'
+        ])
 
-    # Preprocessing & resampling mingguan
+    # Konversi ke datetime dan resampling mingguan
     df['Tanggal_Transaksi'] = pd.to_datetime(df['Tanggal_Transaksi'])
     df = df.set_index('Tanggal_Transaksi')
 
@@ -201,7 +204,7 @@ def get_historical_data_from_db(product_name, n_weeks):
 
 # ============================================================
 # STARTUP FUNCTION
-# Memuat semua artefak (model, scaler, data eksternal)
+# Memuat seluruh artefak model dan data eksternal
 # saat server pertama kali dijalankan
 # ============================================================
 
@@ -314,7 +317,19 @@ def predict():
         )
         forecast_values = np.ceil(np.maximum(forecast_values, 0))
 
-        # Response JSON
+        # Siapkan response JSON
+        df_hist_chart = get_historical_data_from_db(
+            product_name, n_weeks=n_history_weeks
+        )
+
+        historical_json = [
+            {
+                "tanggal": date.strftime('%Y-%m-%d'),
+                "jumlah": int(row['Jumlah_Produk_Terjual'])
+            }
+            for date, row in df_hist_chart.iterrows()
+        ]
+
         forecast_json = []
         product_price = g_product_prices.get(product_name, 0)
 
@@ -326,7 +341,10 @@ def predict():
                 "prediksi_pendapatan": int(value * product_price)
             })
 
-        return jsonify({"forecast_data": forecast_json}), 200
+        return jsonify({
+            "historical_data": historical_json,
+            "forecast_data": forecast_json
+        }), 200
 
     except Exception as e:
         print(f"Error pada endpoint /predict: {e}")
