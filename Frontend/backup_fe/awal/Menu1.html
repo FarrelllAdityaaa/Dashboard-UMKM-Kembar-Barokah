@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./navbar/navbar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+
+        h1 {
+            justify-self: center;
+            color: #333;
+            font-size: 24px;
+        }
+
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            text-align: center;
+            margin: 0 auto;
+            margin-bottom: -5em;
+            margin-top: -2em;
+        }
+
+        .produk-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .produk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .produk-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .produk-grid {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 2rem;
+        }
+
+        .produk-card {
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 24%;
+        }
+
+        .produk-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+
+        .produk-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .stok-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #7f8c8d;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .stok-icon {
+            color: #e74c3c;
+        }
+
+        .produk-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;        
+        }
+
+        .btn-detail {
+            background: #4d5052;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-detail:hover {
+            background: #38393a;
+        }
+
+        .btn-tambah {
+            background: #27ae60;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-tambah:hover {
+            background: #219a52;
+        }
+
+        .btn-tambah-produk {
+            color: rgb(51, 50, 50);
+            font-size: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            height: 100%;
+            width: 100%;
+        }
+
+        .btn-tambah-produk:hover {
+            background: #b3b0ae;
+        }
+
+        img {
+            width: 260px;
+            height: 260px;
+            border-radius: 10px;
+            align-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .produk-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .produk-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar-placeholder" style="position: fixed; width: 100%; z-index: 1; top: 0;"></div>
+
+    <div class="welcome-section">
+        <img src="./asset/garis.svg" alt="" style="width: 40%;">
+        <h1>MENU PRODUK</h1>
+        <img src="./asset/garis.svg" alt="" style="width: 40%;">
+    </div>
+
+    <div class="produk-grid">
+      <!-- Product 1 -->
+      <div class="produk-card">
+        <div class="kerupuk">
+          <img src="./asset/kerupuk kulit.png" alt="">
+        </div>
+        <h3 class="produk-name">Kerupuk Kulit Original</h3>
+        <div class="stok-info">
+          <i class="fas fa-box stok-icon"></i>
+          <span>Sisa Stok: 350</span>
+        </div>
+        <div class="produk-actions">
+          <button class="btn btn-detail">
+            <i class="fas fa-info-circle"></i>
+            Detail
+          </button>
+          <button class="btn btn-tambah">
+            <i class="fas fa-plus"></i>
+            Tambah Stok
+          </button>
+        </div>
+      </div>
+
+      <!-- Product 2 -->
+      <div class="produk-card">
+        <div class="pangsit">
+          <img src="./asset/pangsit.png" alt="">
+        </div>
+        <h3 class="produk-name">Pangsit Bawang Asin</h3>
+        <div class="stok-info">
+          <i class="fas fa-box stok-icon"></i>
+          <span>Sisa Stok: 330</span>
+        </div>
+        <div class="produk-actions">
+          <button class="btn btn-detail">
+            <i class="fas fa-info-circle"></i>
+            Detail
+          </button>
+          <button class="btn btn-tambah">
+            <i class="fas fa-plus"></i>
+            Tambah Stok
+          </button>
+        </div>
+      </div>
+
+      <!-- Product 3 -->
+      <div class="produk-card">
+        <div class="stik">
+          <img src="./asset/stik.png" alt="">
+        </div>
+        <h3 class="produk-name">Stik Keju Pedas</h3>
+        <div class="stok-info">
+          <i class="fas fa-box stok-icon"></i>
+          <span>Sisa Stok: 330</span>
+        </div>
+        <div class="produk-actions">
+          <button class="btn btn-detail">
+            <i class="fas fa-info-circle"></i>
+            Detail
+          </button>
+          <button class="btn btn-tambah">
+            <i class="fas fa-plus"></i>
+            Tambah Stok
+          </button>
+        </div>
+
+    </div>
+   
+    <div class="produk-card">
+        <button class="btn btn-tambah-produk">
+            <img src="./asset/tambah.svg" alt="" style="margin-top: -5em;">
+            <p style="margin-top: -10em;">Tambah Produk</p>
+        </button>
+    </div>
+
+</div>
+
+    <script>
+        document.querySelectorAll('.btn-detail').forEach(button => {
+        button.addEventListener('click', function() {
+            const productName = this.closest('.produk-card').querySelector('.produk-name').textContent;
+            alert(`Detail produk: ${productName}`);
+        });
+        });
+
+        document.querySelectorAll('.btn-tambah').forEach(button => {
+        button.addEventListener('click', function() {
+            const productName = this.closest('.produk-card').querySelector('.produk-name').textContent;
+            alert(`Tambah stok untuk: ${productName}`);
+        });
+        });
+
+        document.querySelector('.btn-tambah-produk').addEventListener('click', function() {
+        alert('Fitur Tambah Produk akan dibuka');
+        });
+
+        fetch('./navbar/navbar.html')
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById('navbar-placeholder').innerHTML = data;
+        });
+    </script>
+</body>
+</html>

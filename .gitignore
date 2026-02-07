@@ -1,0 +1,58 @@
+# ======== Node.js & Frontend ========
+node_modules/
+**/node_modules/
+
+# ======== Build output ========
+dist/
+build/
+Frontend/dist/
+Frontend/build/
+Backend/dist/
+Backend/build/
+.vite/
+.cache/
+.parcel-cache/
+.next/
+
+# ======== Environment files ========
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# ======== Log files ========
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ======== System files ========
+.DS_Store
+Thumbs.db
+*.tmp
+
+# ======== IDE / Editor ========
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ======== OS ========
+desktop.ini
+
+# ======== Python Virtual Environment ========
+venv/
+env/
+
+# ======== Python Cache and Compiled Files ========
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ======== Jupyter/Colab Cache ========
+.ipynb_checkpoints/
+
+# ======== File Uploads (Opsional) ========
+uploads/
+static/uploads/
